@@ -7,9 +7,7 @@ public class Percolation {
     private int gridSize;
     private int numOpenSites;
     private WeightedQuickUnionUF uf;
-    private int isFullSetNum;
-    private static int VIRTUAL_TOP_SITE_NUMBER_INDEX;
-    private static int VIRTUAL_BOTTOM_SITE_NUMBER;
+    private int VIRTUAL_TOP_SITE_NUMBER_INDEX;
     private int[] status;
 
     private int xyTo1D(int r, int c) {
@@ -52,7 +50,7 @@ public class Percolation {
             throw new IndexOutOfBoundsException("row and col must be within: (" + 0 + "," + (gridSize -1) + ")");
         }
 
-        if (isOpen(row, col)){
+        if (isOpen(row, col)) {
             return;
         }
 
@@ -82,7 +80,7 @@ public class Percolation {
         for (int i = 0; i < 4; i++) {
             int neighborRow = row + dRow[i];
             int neighborColumn = col + dCol[i];
-            if(isValidLocation(neighborRow, neighborColumn) && isOpen(neighborRow, neighborColumn)) {
+            if (isValidLocation(neighborRow, neighborColumn) && isOpen(neighborRow, neighborColumn)) {
                 //for each valid neighbor that is open, we need to:
 
                 //calculate the site root's status
@@ -107,7 +105,7 @@ public class Percolation {
     //is the site (row, col) open?
     public boolean isOpen(int row, int col) {
         if (row < 0 || row >= gridSize || col < 0 || col >= gridSize) {
-            throw new IndexOutOfBoundsException("row and col must be within: (" + 0 + "," + (gridSize -1) + ")");
+            throw new IndexOutOfBoundsException("row and col must be within: (" + 0 + "," + (gridSize - 1) + ")");
         }
         return grid[row][col];
     }
@@ -115,7 +113,7 @@ public class Percolation {
     //is the site (row, col) full?
     public boolean isFull(int row, int col) {
         if (row < 0 || row >= gridSize || col < 0 || col >= gridSize) {
-            throw new IndexOutOfBoundsException("row and col must be within: (" + 0 + "," + (gridSize -1) + ")");
+            throw new IndexOutOfBoundsException("row and col must be within: (" + 0 + "," + (gridSize - 1) + ")");
         }
         /*
         //Linear search. not optimal
