@@ -2,6 +2,7 @@ package lab9tester;
 
 import static org.junit.Assert.*;
 
+import lab9.BSTMap;
 import org.junit.Test;
 import lab9.MyHashMap;
 
@@ -20,6 +21,18 @@ public class TestMyHashMap {
         } catch (Exception e) {
             fail();
         }
+    }
+
+    @Test
+    public void simplePutTest() {
+        MyHashMap<String, Integer> b = new MyHashMap<String, Integer>();
+        b.put("b", 2);
+        b.put("a", 1);
+        b.put("c" ,3);
+        assertEquals(3, b.size());
+        assertTrue(b.containsKey("a"));
+        assertTrue(b.containsKey("b"));
+        assertTrue(b.containsKey("c"));
     }
 
     //assumes put/size/containsKey/get work
@@ -80,6 +93,8 @@ public class TestMyHashMap {
         b.put("hi", 1);
         assertTrue(b.containsKey("hi") && b.get("hi") != null);
     }
+
+
 
     /*
      * Test for general functionality and that the properties of Maps hold.

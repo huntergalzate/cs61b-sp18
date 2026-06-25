@@ -21,8 +21,25 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         return size / buckets.length;
     }
 
+    private void resizeHashTable(int targetBucketsM) {
+        MyHashMap<K,V> tempHashMap = new MyHashMap<>(targetBucketsM);
+        int oldM = buckets.length;
+        for (int i = 0; i < oldM; i++) {
+            ArrayMap<K,V> mapI = buckets[i];
+            for (K k : mapI.keySet()) {
+                tempHashMap.put(k, mapI.get(k));
+            }
+        }
+        this.buckets = tempHashMap.buckets;
+        this.size = tempHashMap.size;
+    }
+
     public MyHashMap() {
-        buckets = new ArrayMap[DEFAULT_SIZE];
+        this(DEFAULT_SIZE);
+    }
+
+    public MyHashMap(int mBuckets) {
+        buckets = new ArrayMap[mBuckets];
         this.clear();
     }
 
@@ -53,19 +70,32 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public V get(K key) {
-        throw new UnsupportedOperationException();
+        int hashCode = hash(key);
+        return buckets[hashCode].get(key);
     }
 
     /* Associates the specified value with the specified key in this map. */
+    //insert the key Key. If it is already present, updates value to Value
     @Override
     public void put(K key, V value) {
-        throw new UnsupportedOperationException();
+        if (loadFactor() > MAX_LF) {
+            int currentMBuckets = buckets.length;
+            resizeHashTable(2*currentMBuckets);
+        }
+        int hashCode = hash(key);
+        V itemAlreadyThere = buckets[hashCode].get(key);
+
+        //if no item found, then we are increasing the size. else, we are just updating the (key, value) pair
+        if (itemAlreadyThere == null) {
+            size = size + 1;
+        }
+        buckets[hashCode].put(key, value);
     }
 
     /* Returns the number of key-value mappings in this map. */
     @Override
     public int size() {
-        throw new UnsupportedOperationException();
+        return size;
     }
 
     //////////////// EVERYTHING BELOW THIS LINE IS OPTIONAL ////////////////
