@@ -1,5 +1,6 @@
 package lab9;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -13,12 +14,14 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     private static final int DEFAULT_SIZE = 16;
     private static final double MAX_LF = 0.75;
+    private final double MIN_LF = 0.25;
 
     private ArrayMap<K, V>[] buckets;
     private int size;
 
-    private int loadFactor() {
-        return size / buckets.length;
+    private double loadFactor() {
+
+        return (double) size / buckets.length;
     }
 
     private void resizeHashTable(int targetBucketsM) {
@@ -103,7 +106,12 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     /* Returns a Set view of the keys contained in this map. */
     @Override
     public Set<K> keySet() {
-        throw new UnsupportedOperationException();
+        Set<K> set = new HashSet<>();
+        for (int i = 0; i < buckets.length; i++) {
+            ArrayMap<K,V> mapI = buckets[i];
+            set.addAll(mapI.keySet());
+        }
+        return set;
     }
 
     /* Removes the mapping for the specified key from this map if exists.
@@ -111,7 +119,19 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * UnsupportedOperationException. */
     @Override
     public V remove(K key) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            throw new IllegalArgumentException("argument to remove() is null");
+        }
+        if (loadFactor() < MIN_LF && buckets.length > DEFAULT_SIZE) {
+            int currentMBuckets = buckets.length;
+            resizeHashTable((int) currentMBuckets/2);
+        }
+        int hashCode = hash(key);
+        V returnItem = buckets[hashCode].remove(key);
+        if (returnItem != null) {
+            size = size - 1;
+        }
+        return returnItem;
     }
 
     /* Removes the entry for the specified key only if it is currently mapped to
@@ -119,11 +139,25 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * throw an UnsupportedOperationException.*/
     @Override
     public V remove(K key, V value) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            throw new IllegalArgumentException("argument to remove() is null");
+        }
+        if (loadFactor() < MIN_LF && buckets.length > DEFAULT_SIZE) {
+            int currentMBuckets = buckets.length;
+            resizeHashTable((int) currentMBuckets/2);
+        }
+        int hashCode = hash(key);
+        V returnItem = buckets[hashCode].get(key);
+        if (returnItem != null && returnItem.equals(value)) {
+            buckets[hashCode].remove(key);
+            size = size - 1;
+        }
+        return returnItem;
     }
 
     @Override
     public Iterator<K> iterator() {
-        throw new UnsupportedOperationException();
+        return keySet().iterator();
     }
+
 }

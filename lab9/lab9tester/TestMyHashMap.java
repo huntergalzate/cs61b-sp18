@@ -95,6 +95,38 @@ public class TestMyHashMap {
     }
 
 
+    @Test
+    public void sanityRemoveTest() {
+        MyHashMap<String, Integer> b = new MyHashMap<>();
+        b.put("b", 2);
+        b.put("a", 1);
+        b.put("c", 3);
+        assertEquals(3, b.size());
+
+        assertEquals(Integer.valueOf(1), b.remove("a"));
+        assertEquals(2, b.size());
+
+        assertEquals(Integer.valueOf(3), b.remove("c"));
+        assertEquals(1, b.size());
+
+        assertEquals(Integer.valueOf(2), b.remove("b"));
+        assertEquals(0, b.size());
+    }
+
+    @Test
+    public void largeRemoveTest() {
+        MyHashMap<Integer, Integer> b = new MyHashMap<>();
+        int N = 100;
+        for (int i = 0; i < N; i++) {
+            b.put(i, i);
+        }
+
+        assertEquals(N, b.size());
+        for (int i = 0; i < N/2; i++) {
+            assertEquals(Integer.valueOf(i), b.remove(i));
+        }
+        assertEquals(N/2, b.size());
+    }
 
     /*
      * Test for general functionality and that the properties of Maps hold.
