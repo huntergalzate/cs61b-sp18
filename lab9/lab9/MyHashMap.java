@@ -122,15 +122,16 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         if (key == null) {
             throw new IllegalArgumentException("argument to remove() is null");
         }
-        if (loadFactor() < MIN_LF && buckets.length > DEFAULT_SIZE) {
-            int currentMBuckets = buckets.length;
-            resizeHashTable((int) currentMBuckets/2);
-        }
         int hashCode = hash(key);
         V returnItem = buckets[hashCode].remove(key);
         if (returnItem != null) {
             size = size - 1;
+            if (loadFactor() < MIN_LF && buckets.length > DEFAULT_SIZE) {
+                int currentMBuckets = buckets.length;
+                resizeHashTable((int) currentMBuckets/2);
+            }
         }
+
         return returnItem;
     }
 
@@ -142,16 +143,20 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         if (key == null) {
             throw new IllegalArgumentException("argument to remove() is null");
         }
-        if (loadFactor() < MIN_LF && buckets.length > DEFAULT_SIZE) {
-            int currentMBuckets = buckets.length;
-            resizeHashTable((int) currentMBuckets/2);
-        }
+
         int hashCode = hash(key);
         V returnItem = buckets[hashCode].get(key);
         if (returnItem != null && returnItem.equals(value)) {
             buckets[hashCode].remove(key);
             size = size - 1;
+
+            //resize only if a removal took place
+            if (loadFactor() < MIN_LF && buckets.length > DEFAULT_SIZE) {
+                int currentMBuckets = buckets.length;
+                resizeHashTable((int) currentMBuckets/2);
+            }
         }
+
         return returnItem;
     }
 
