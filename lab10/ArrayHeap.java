@@ -118,26 +118,6 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
     private void sink(int index) {
         // Throws an exception if index is invalid. DON'T CHANGE THIS LINE.
         validateSinkSwimArg(index);
-
-        //sink left as far as possible.
-        int leftChildIndex = leftIndex(index);
-        while (min(index, leftChildIndex) == leftChildIndex && index < size) {
-            swap(index, leftChildIndex);
-            index = leftChildIndex;
-            leftChildIndex = leftIndex(leftChildIndex);
-        }
-
-        //then sink right (probably only need to possibly sink once?... so the while loop might be overkill
-        int rightChildIndex = rightIndex(index);
-        while (min(index, rightChildIndex) == rightChildIndex && index < size) {
-            swap(index, rightChildIndex);
-            index = rightChildIndex;
-            rightChildIndex = rightIndex(rightChildIndex);
-        }
-    }*/
-    private void sink(int index) {
-        // Throws an exception if index is invalid. DON'T CHANGE THIS LINE.
-        validateSinkSwimArg(index);
         while (index < size) {
             int minOfChildren = min(rightIndex(index), leftIndex(index));
             if (minOfChildren == rightIndex(index)) {
@@ -157,6 +137,34 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
                     //leftChildIndex = leftIndex(leftChildIndex);
                 } else {
                     break;
+                }
+            }
+        }
+    }
+     */
+
+    private void sink(int index) {
+        // Throws an exception if index is invalid. DON'T CHANGE THIS LINE.
+        validateSinkSwimArg(index);
+        while (index < size) {
+            int minOfChildren = min(rightIndex(index), leftIndex(index));
+
+            //if index is less than the minimum of the children, then we are done sinking
+            if (min(index, minOfChildren) == index) {
+                return;
+            }
+
+            if (minOfChildren == rightIndex(index)) {
+                int rightChildIndex = rightIndex(index);
+                if (min(index, rightChildIndex) == rightChildIndex) {
+                    swap(index, rightChildIndex);
+                    index = rightChildIndex;
+                }
+            } else {
+                int leftChildIndex = leftIndex(index);
+                if (min(index, leftChildIndex) == leftChildIndex) {
+                    swap(index, leftChildIndex);
+                    index = leftChildIndex;
                 }
             }
         }
