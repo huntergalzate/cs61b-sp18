@@ -27,24 +27,21 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      * Returns the index of the node to the left of the node at i.
      */
     private static int leftIndex(int i) {
-        /* TODO: Your code here! */
-        return 0;
+        return 2*i;
     }
 
     /**
      * Returns the index of the node to the right of the node at i.
      */
     private static int rightIndex(int i) {
-        /* TODO: Your code here! */
-        return 0;
+        return 2*i+1;
     }
 
     /**
      * Returns the index of the node that is the parent of the node at i.
      */
     private static int parentIndex(int i) {
-        /* TODO: Your code here! */
-        return 0;
+        return i/2;
     }
 
     /**
@@ -106,20 +103,63 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
     private void swim(int index) {
         // Throws an exception if index is invalid. DON'T CHANGE THIS LINE.
         validateSinkSwimArg(index);
-
-        /** TODO: Your code here. */
-        return;
+        int parentIndex = parentIndex(index);
+        while (min(index, parentIndex) == index && index > 1) {
+            swap(index, parentIndex);
+            index = parentIndex;
+            parentIndex = parentIndex(parentIndex);
+        }
     }
 
     /**
      * Bubbles down the node currently at the given index.
      */
+    /*
     private void sink(int index) {
         // Throws an exception if index is invalid. DON'T CHANGE THIS LINE.
         validateSinkSwimArg(index);
 
-        /** TODO: Your code here. */
-        return;
+        //sink left as far as possible.
+        int leftChildIndex = leftIndex(index);
+        while (min(index, leftChildIndex) == leftChildIndex && index < size) {
+            swap(index, leftChildIndex);
+            index = leftChildIndex;
+            leftChildIndex = leftIndex(leftChildIndex);
+        }
+
+        //then sink right (probably only need to possibly sink once?... so the while loop might be overkill
+        int rightChildIndex = rightIndex(index);
+        while (min(index, rightChildIndex) == rightChildIndex && index < size) {
+            swap(index, rightChildIndex);
+            index = rightChildIndex;
+            rightChildIndex = rightIndex(rightChildIndex);
+        }
+    }*/
+    private void sink(int index) {
+        // Throws an exception if index is invalid. DON'T CHANGE THIS LINE.
+        validateSinkSwimArg(index);
+        while (index < size) {
+            int minOfChildren = min(rightIndex(index), leftIndex(index));
+            if (minOfChildren == rightIndex(index)) {
+                int rightChildIndex = rightIndex(index);
+                if (min(index, rightChildIndex) == rightChildIndex) {
+                    swap(index, rightChildIndex);
+                    index = rightChildIndex;
+                    //rightChildIndex = rightIndex(rightChildIndex);
+                } else {
+                    break;
+                }
+            } else {
+                int leftChildIndex = leftIndex(index);
+                if (min(index, leftChildIndex) == leftChildIndex) {
+                    swap(index, leftChildIndex);
+                    index = leftChildIndex;
+                    //leftChildIndex = leftIndex(leftChildIndex);
+                } else {
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -132,8 +172,11 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         if (size + 1 == contents.length) {
             resize(contents.length * 2);
         }
-
-        /* TODO: Your code here! */
+        Node nodeToInsert = new Node(item, priority);
+        int insertIndex = size + 1;
+        contents[insertIndex] = nodeToInsert;
+        size = size + 1;
+        swim(insertIndex);
     }
 
     /**
@@ -142,8 +185,10 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public T peek() {
-        /* TODO: Your code here! */
-        return null;
+        if (contents[1] == null) {
+            return null;
+        }
+        return contents[1].item();
     }
 
     /**
@@ -157,8 +202,21 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public T removeMin() {
-        /* TODO: Your code here! */
-        return null;
+        if (size == 0) {
+            return null;
+        } else {
+            T returnItem = contents[1].item();
+            if (size == 1) {
+                contents[size] = null;
+                size = 0;
+            } else {
+                swap(1, size);
+                contents[size] = null;
+                size = size - 1;
+                sink(1);
+            }
+            return returnItem;
+        }
     }
 
     /**
@@ -378,9 +436,13 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         pq.insert("b", 2);
         pq.insert("c", 3);
         pq.insert("d", 4);
+        //System.out.println("Before removeMin(): ");
+        //System.out.println(pq);
         String removed = pq.removeMin();
         assertEquals("a", removed);
         assertEquals(9, pq.size());
+        //System.out.println("After removeMin(): ");
+        //System.out.println(pq);
         assertEquals("b", pq.contents[1].myItem);
         assertEquals("c", pq.contents[2].myItem);
         assertEquals("e", pq.contents[3].myItem);
@@ -405,13 +467,43 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         pq.insert("b", 2);
         pq.insert("c", 3);
         pq.insert("d", 4);
-
+        //System.out.println("Before removeMin(): ");
+        //System.out.println(pq);
         int i = 0;
         String[] expected = {"a", "b", "c", "c", "d", "d", "e", "g", "h", "i"};
         while (pq.size() > 1) {
             assertEquals(expected[i], pq.removeMin());
+            //System.out.println("++++++++++++++++++++++++++++++++");
+            //System.out.println(pq);
             i += 1;
         }
+    }
+
+    @Test
+    public void testInsertAndRemoveAll() {
+        ExtrinsicPQ<String> pq = new ArrayHeap<>();
+        pq.insert("c", 3);
+        pq.insert("i", 9);
+        pq.insert("g", 7);
+        pq.insert("d", 4);
+        pq.insert("a", 1);
+        pq.insert("h", 8);
+        pq.insert("e", 5);
+        pq.insert("b", 2);
+        pq.insert("c", 3);
+        pq.insert("d", 4);
+        //System.out.println("Before removeMin(): ");
+        //System.out.println(pq);
+        int i = 0;
+        String[] expected = {"a", "b", "c", "c", "d", "d", "e", "g", "h", "i"};
+        while (pq.size() > 1) {
+            assertEquals(expected[i], pq.removeMin());
+            //System.out.println("++++++++++++++++++++++++++++++++");
+            //System.out.println(pq);
+            i += 1;
+        }
+        assertEquals("i", pq.removeMin());
+        assertEquals(0, pq.size());
     }
 
 }
