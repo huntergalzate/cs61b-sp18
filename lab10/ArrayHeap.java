@@ -217,8 +217,32 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public void changePriority(T item, double priority) {
-        /* TODO: Your code here! */
-        return;
+        //search for T item. want index i
+        int foundNodeIndexLocation = 0;
+        Node foundNode = null;
+        int i = 1;
+        while (foundNode == null && i < contents.length) {
+            T currItem = contents[i].myItem;
+            if (currItem.equals(item)) {
+                foundNode = contents[i];
+                foundNodeIndexLocation = i;
+            }
+            i = i + 1;
+        }
+        //item T not found in the min-heap array. do nothing and return out
+        if (foundNode == null) {
+            return;
+        }
+        //save old priority into comparison variable
+        double oldPriority = foundNode.myPriority;
+        foundNode.myPriority = priority;
+
+        //if new priority is greater than old priority, then we need sink() this node down (higher values go down the min-heap)
+        if (priority > oldPriority) {
+            sink(foundNodeIndexLocation);
+        } else if (priority < oldPriority) {
+            swim(foundNodeIndexLocation);
+        }
     }
 
     /**
@@ -485,4 +509,77 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         assertEquals(0, pq.size());
     }
 
+    @Test
+    public void testChangePriorityOnRoot() {
+        ArrayHeap<String> pq = new ArrayHeap<>();
+        pq.size = 7;
+        for (int i = 1; i <= 7; i += 1) {
+            pq.contents[i] = new ArrayHeap<String>.Node("x" + i, i);
+        }
+        System.out.println("PQ before changePriority():");
+        System.out.println(pq);
+
+        // Change root's priority to a large value
+        pq.changePriority("x1", 10);
+
+        System.out.println("PQ after changePriority():");
+        System.out.println(pq);
+        assertEquals("x2", pq.contents[1].myItem);
+        assertEquals("x4", pq.contents[2].myItem);
+        assertEquals("x3", pq.contents[3].myItem);
+        assertEquals("x1", pq.contents[4].myItem);
+        assertEquals("x5", pq.contents[5].myItem);
+        assertEquals("x6", pq.contents[6].myItem);
+        assertEquals("x7", pq.contents[7].myItem);
+    }
+
+    @Test
+    public void testChangePriorityOnMidLevelMoveDown() {
+        ArrayHeap<String> pq = new ArrayHeap<>();
+        pq.size = 7;
+        for (int i = 1; i <= 7; i += 1) {
+            pq.contents[i] = new ArrayHeap<String>.Node("x" + i, i);
+        }
+        System.out.println("PQ before changePriority():");
+        System.out.println(pq);
+
+        // Change root's priority to a large value
+        pq.changePriority("x3", 10);
+
+        System.out.println("PQ after changePriority():");
+        System.out.println(pq);
+
+        assertEquals("x1", pq.contents[1].myItem);
+        assertEquals("x2", pq.contents[2].myItem);
+        assertEquals("x6", pq.contents[3].myItem);
+        assertEquals("x4", pq.contents[4].myItem);
+        assertEquals("x5", pq.contents[5].myItem);
+        assertEquals("x3", pq.contents[6].myItem);
+        assertEquals("x7", pq.contents[7].myItem);
+    }
+
+    @Test
+    public void testChangePriorityOnMidLevelMoveUp() {
+        ArrayHeap<String> pq = new ArrayHeap<>();
+        pq.size = 7;
+        for (int i = 1; i <= 7; i += 1) {
+            pq.contents[i] = new ArrayHeap<String>.Node("x" + i, i);
+        }
+        System.out.println("PQ before changePriority():");
+        System.out.println(pq);
+
+        // Change root's priority to a large value
+        pq.changePriority("x6", 2);
+
+        System.out.println("PQ after changePriority():");
+        System.out.println(pq);
+
+        assertEquals("x1", pq.contents[1].myItem);
+        assertEquals("x2", pq.contents[2].myItem);
+        assertEquals("x6", pq.contents[3].myItem);
+        assertEquals("x4", pq.contents[4].myItem);
+        assertEquals("x5", pq.contents[5].myItem);
+        assertEquals("x3", pq.contents[6].myItem);
+        assertEquals("x7", pq.contents[7].myItem);
+    }
 }
